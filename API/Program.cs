@@ -44,6 +44,18 @@ namespace API
                 .RejectionStatusCode = 429; // Too many requests;
             });
 
+            // Concurrency Rate Limiter
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.AddConcurrencyLimiter("ConcurrencyPolicy", opt =>
+                {
+                    opt.PermitLimit = 5;
+                    opt.QueueLimit = 5;
+                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                })
+                .RejectionStatusCode = 429; // Too many requests;;
+            });
+
 
             var app = builder.Build();
 

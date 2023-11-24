@@ -40,5 +40,13 @@ namespace API.Controllers
         {
             return new List<string>() { "Adam", "John", "Omar" };
         }
+
+        [HttpGet]
+        [Route("GetCities")]
+        [EnableRateLimiting("ConcurrencyPolicy")]
+        public IEnumerable<string> GetCities()
+        {
+            return new List<string>() { "London", "Dubai", "Tokyo" };
+        }
     }
 }
