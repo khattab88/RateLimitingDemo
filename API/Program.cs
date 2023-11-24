@@ -17,7 +17,7 @@ namespace API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
+            // Fixed Window Rate Limiter
             builder.Services.AddRateLimiter(options =>
             {
                 options.AddFixedWindowLimiter("FixedWindowPolicy", opt =>
@@ -28,6 +28,20 @@ namespace API
                     opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 })
                 .RejectionStatusCode = 429; // Too many requests
+            });
+
+            // Sliding Window Rate Limiter
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.AddSlidingWindowLimiter("SlidingWindowPolicy", opt =>
+                {
+                    opt.Window = TimeSpan.FromSeconds(10);
+                    opt.PermitLimit = 4;
+                    opt.QueueLimit = 3;
+                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    opt.SegmentsPerWindow = 3;
+                })
+                .RejectionStatusCode = 429; // Too many requests;
             });
 
 
