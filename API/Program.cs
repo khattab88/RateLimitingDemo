@@ -1,4 +1,7 @@
 
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+
 namespace API
 {
     public class Program
@@ -14,6 +17,20 @@ namespace API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter("FixedWindowPolicy", opt =>
+                {
+                    opt.Window = TimeSpan.FromSeconds(5);
+                    opt.PermitLimit = 5;
+                    opt.QueueLimit = 10;
+                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                })
+                .RejectionStatusCode = 429; // Too many requests
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -22,6 +39,8 @@ namespace API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseRateLimiter();
 
             app.UseHttpsRedirection();
 
